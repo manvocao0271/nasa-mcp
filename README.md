@@ -150,11 +150,47 @@ uv sync
 uv run pytest
 ```
 
-Test the server locally with the MCP inspector:
+### Running the server locally
+
+The server speaks stdio JSON-RPC — running it bare in a terminal just blocks waiting for a client. To smoke-test that it boots:
+
+```bash
+uv run nasa-mcp
+```
+
+To poke at tools interactively, use the MCP Inspector:
 
 ```bash
 uv run mcp dev nasa_mcp/server.py
 ```
+
+This opens a browser UI at `localhost:6274` where you can list and call tools.
+
+### Linux / WSL setup notes
+
+**WSL users:** `mcp dev` launches the Inspector via `npx`, which means you need Node.js installed **inside WSL**, not from Windows interop. Check with:
+
+```bash
+which npx
+```
+
+If it returns something like `/mnt/c/Program Files/nodejs/npx`, you're using Windows Node — the Inspector will spawn on the Windows side and won't be able to resolve Linux paths (`/home/...`), giving cryptic errors like `program not found` or `The system cannot find the path specified. (os error 3)`.
+
+Fix by installing Node natively in WSL:
+
+```bash
+sudo apt update && sudo apt install -y nodejs npm
+```
+
+After that, `which npx` should point under `/usr/bin` and `uv run mcp dev nasa_mcp/server.py` will work.
+
+**Skipping the Inspector entirely.** If you only want to exercise the server from a real LLM, wire it directly into Claude Code:
+
+```bash
+claude mcp add nasa-mcp -- uv --directory /absolute/path/to/nasa-mcp run nasa-mcp
+```
+
+Then `/mcp` inside Claude Code will list it as connected.
 
 ## Roadmap
 
