@@ -128,16 +128,18 @@ Full tool schemas: see [`docs/tools.md`](docs/tools.md).
 
 ## Performance (examples)
 
-Measured on a 50-query benchmark suite (M1 MacBook Air, NASA's `DEMO_KEY` removed):
+Measured on a 30-date APOD benchmark (cold pass + warm pass, real `NASA_API_KEY`, WSL2):
 
 | Metric | Value |
 |--------|-------|
-| Cache hit rate (after warmup) | ... |
-| p50 latency (cached) | ... |
-| p50 latency (cold) | ... |
-| p95 latency (cold) | ... |
-| Tool-selection accuracy (Claude Sonnet judge) | ... |
-| Answer correctness (Claude Sonnet judge) | ... |
+| p50 latency (cold) | 514.2 ms |
+| p95 latency (cold) | 836.0 ms |
+| p50 latency (cached) | 0.019 ms |
+| p95 latency (cached) | 0.039 ms |
+| Cache speedup (p50) | ~27,000× |
+| Hit rate (cold + warm pass, by design) | 50.00% |
+| Tool-selection accuracy (Claude Sonnet judge) | _pending_ |
+| Answer correctness (Claude Sonnet judge) | _pending_ |
 
 Run the benchmark yourself: `uv run python evals/run_evals.py`.
 

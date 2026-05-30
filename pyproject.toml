@@ -4,7 +4,12 @@ version = "0.1.0"
 description = "Model Context Protocol server exposing NASA's open APIs as agent tools."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["httpx>=0.28.1", "mcp[cli]>=1.27.1", "pydantic>=2.13.4"]
+dependencies = [
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.27.1",
+    "pydantic>=2.13.4",
+    "python-dotenv>=1.2.2",
+]
 
 [project.scripts]
 nasa-mcp = "nasa_mcp.server:main"

@@ -7,6 +7,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 
 DEFAULT_CACHE_PATH = Path.home() / ".cache" / "nasa-mcp" / "cache.sqlite3"
 
@@ -22,6 +24,7 @@ class Config:
 
 def load() -> Config:
     """Read config from the environment, applying defaults."""
+    load_dotenv() # injects .env variables into os.environ
     nasa_api_key = os.getenv("NASA_API_KEY", "DEMO_KEY")
     if nasa_api_key == "DEMO_KEY":
         print(
