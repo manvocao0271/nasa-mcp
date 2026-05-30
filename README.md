@@ -77,10 +77,10 @@ Ask Claude:
 
 |Complete | Tool | Description |
 |---------|------|-------------|
-|[X]| `get_apod` | Astronomy Picture of the Day for a given date (or today). |
+|[x]| `get_apod` | Astronomy Picture of the Day for a given date (or today). |
 |[]| `search_apod` | Full-text search across the APOD archive (1995–today). |
-|[X]| `get_rover_photos` | Photos from a Mars rover by sol or Earth date, optionally filtered by camera. |
-|[X]| `get_rover_manifest` | Mission overview for a rover: total photos, sol range, cameras. |
+|[x]| `get_rover_photos` | Photos from a Mars rover by sol or Earth date, optionally filtered by camera. |
+|[x]| `get_rover_manifest` | Mission overview for a rover: total photos, sol range, cameras. |
 |[]| `get_neo_feed` | Near-Earth asteroids approaching in a date range. |
 |[]| `get_neo_lookup` | Detailed orbital data for a specific asteroid. |
 |[]| `search_image_library` | Search NASA's full image and video library. |
