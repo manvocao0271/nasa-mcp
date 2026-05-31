@@ -31,3 +31,35 @@ async def get_apod(config: Config, target_date: date | None = None) -> dict:
             raise NotFoundError(response.text)
         case _:
             raise NasaApiError(f"APOD returned {response.status_code}: {response.text}")
+
+
+async def search_apod(config: Config, query: str, start_date: date, end_date: date) -> list[dict]:
+    """Fetch APODs in a date range, filtered case-insensitively against title and explanation."""
+
+    params: dict[str, str] = {
+        "api_key": config.nasa_api_key,
+        "start_date": start_date.isoformat(),
+        "end_date": end_date.isoformat(),
+        }
+
+    async with httpx.AsyncClient(timeout=config.request_timeout) as client:
+        response = await client.get(
+            "https://api.nasa.gov/planetary/apod",
+            params=params
+        )
+    
+    match response.status_code:
+        case status if 200 <= status < 300:
+            q = query.lower()
+            return [
+                entry for entry in response.json()
+                if q in entry.get("title", "").lower()
+                or q in entry.get("explanation", "").lower()
+            ]
+        case 429:
+            raise RateLimitError(response.text)
+        case 404:
+            raise NotFoundError(response.text)
+        case _:
+            raise NasaApiError(f"APOD returned {response.status_code}: {response.text}")
+        
