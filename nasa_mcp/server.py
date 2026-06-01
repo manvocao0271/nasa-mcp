@@ -2,9 +2,10 @@
 
 from datetime import date, timedelta
 import hashlib
+from typing import Literal
 
 from mcp.server.fastmcp import FastMCP
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from nasa_mcp.config import load
 from nasa_mcp.cache import Cache
@@ -17,6 +18,16 @@ cache = Cache(config.cache_path)
 
 LONG_TTL = 365 * 24 * 3600
 SHORT_TTL = 4 * 3600
+SupportedRoverName = Literal["curiosity", "perseverance", "spirit", "opportunity"]
+
+
+def _normalize_optional_string(value: str | None) -> str | None:
+    """Normalize optional string inputs used by NASA rover endpoints."""
+    if value is None:
+        return None
+
+    normalized = value.strip().lower()
+    return normalized or None
 
 
 class GetApodInput(BaseModel):
@@ -98,24 +109,72 @@ async def search_apod_tool(args: SearchApodInput) -> list[dict]:
     return response
 
 
+class GetRoverPhotosInput(BaseModel):
+    """Input validation for get_rover_photos_tool."""
+
+    rover: SupportedRoverName = Field(
+        description="Mars rover name to fetch photos from. Supported values: curiosity, perseverance, spirit, opportunity.",
+    )
+    sol: int | None = Field(
+        default=None,
+        ge=0,
+        description="Martian sol to fetch photos for. Provide exactly one of sol or earth_date.",
+    )
+    earth_date: date | None = Field(
+        default=None,
+        description="Earth calendar date to fetch photos for. Provide exactly one of sol or earth_date.",
+    )
+    camera: str | None = Field(
+        default=None,
+        description="Optional rover camera abbreviation filter, such as FHAZ, RHAZ, NAVCAM, MAST, CHEMCAM, MAHLI, MARDI, PANCAM, or MINITES.",
+    )
+
+    @field_validator("rover", mode="before")
+    @classmethod
+    def normalize_rover(cls, value: str) -> str:
+        """Allow case-insensitive rover names while exposing strict enum values."""
+        return value.strip().lower() if isinstance(value, str) else value
+
+    @field_validator("camera", mode="before")
+    @classmethod
+    def normalize_camera(cls, value: str | None) -> str | None:
+        """Normalize optional camera abbreviations before the API request."""
+        return _normalize_optional_string(value)
+
+    @model_validator(mode="after")
+    def validate_date_selection(self) -> "GetRoverPhotosInput":
+        """Require one, and only one, Mars date selector."""
+        if (self.sol is None) == (self.earth_date is None):
+            raise ValueError("Provide exactly one of sol or earth_date.")
+        return self
+
+
+class GetRoverManifestInput(BaseModel):
+    """Input validation for get_rover_manifest_tool."""
+
+    rover: SupportedRoverName = Field(
+        description="Mars rover name to fetch the mission manifest for. Supported values: curiosity, perseverance, spirit, opportunity.",
+    )
+
+    @field_validator("rover", mode="before")
+    @classmethod
+    def normalize_rover(cls, value: str) -> str:
+        """Allow case-insensitive rover names while exposing strict enum values."""
+        return value.strip().lower() if isinstance(value, str) else value
+
+
 @mcp.tool()
-async def get_rover_photos_tool(
-    rover_name: str,
-    sol: int | None = None,
-    earth_date: date | None = None,
-    camera: str | None = None,
-) -> dict:
+async def get_rover_photos_tool(args: GetRoverPhotosInput) -> dict:
     """Fetch Mars rover photos by sol or Earth date, optionally filtered by camera."""
-    if (sol is None) == (earth_date is None):
-        raise ValueError("Provide exactly one of sol or earth_date.")
+    rover = args.rover
+    camera_name = args.camera
 
-    if sol is not None and sol < 0:
-        raise ValueError("sol must be greater than or equal to 0.")
+    if args.sol is not None:
+        date_key = f"sol:{args.sol}"
+    else:
+        assert args.earth_date is not None
+        date_key = f"earth_date:{args.earth_date.isoformat()}"
 
-    rover = rover_name.strip().lower()
-    camera_name = camera.strip().lower() if camera else None
-
-    date_key = f"sol:{sol}" if sol is not None else f"earth_date:{earth_date.isoformat()}"
     camera_key = camera_name or "all"
     key = f"mars_rover_photos:{rover}:{date_key}:camera:{camera_key}"
 
@@ -125,8 +184,8 @@ async def get_rover_photos_tool(
     response = await get_rover_photos(
         config,
         rover_name=rover,
-        sol=sol,
-        earth_date=earth_date,
+        sol=args.sol,
+        earth_date=args.earth_date,
         camera=camera_name,
     )
 
@@ -135,9 +194,9 @@ async def get_rover_photos_tool(
 
 
 @mcp.tool()
-async def get_rover_manifest_tool(rover_name: str) -> dict:
+async def get_rover_manifest_tool(args: GetRoverManifestInput) -> dict:
     """Fetch the mission manifest for a specific Mars rover, including landing date, launch date, status, and total photos taken."""
-    rover = rover_name.strip().lower()
+    rover = args.rover
     key = f"mars_rover_manifest:{rover}"
 
     cached = cache.get(key)
