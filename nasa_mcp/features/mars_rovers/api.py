@@ -3,8 +3,9 @@
 Endpoints: https://api.nasa.gov/mars-photos/api/v1/
 """
 
-import httpx
 from datetime import date
+
+import httpx
 
 from nasa_mcp.config import Config
 from nasa_mcp.errors import NasaApiError, NotFoundError, RateLimitError

@@ -1,11 +1,14 @@
-"""Unit tests for Mars rover tool input models."""
+"""Unit tests for Mars rover input models."""
 
 from datetime import date
 
 import pytest
 from pydantic import ValidationError
 
-from nasa_mcp.server import GetRoverManifestInput, GetRoverPhotosInput
+from nasa_mcp.features.mars_rovers.inputs import (
+    GetRoverManifestInput,
+    GetRoverPhotosInput,
+)
 
 
 def test_rover_photos_accepts_sol_selector() -> None:
