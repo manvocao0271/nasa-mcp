@@ -6,7 +6,7 @@
 Ask Claude "what did Curiosity see on Mars yesterday?" or "find me exoplanets similar to Earth" and get answers backed by real NASA data, with images, citations, and structured results.
 
 [![PyPI version](https://img.shields.io/pypi/v/nasa-mcp.svg)](https://pypi.org/project/nasa-mcp/)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.12+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 <!-- Replace with an actual demo gif once recorded -->
@@ -120,6 +120,7 @@ Full tool schemas: see [`docs/tools.md`](docs/tools.md).
 
 ### Design decisions
 
+- **Feature-first modules** — each NASA API domain lives under `nasa_mcp/features/<feature>/`, keeping API clients, Pydantic inputs, MCP registration, cache orchestration, and tests close together.
 - **stdio transport** — runs as a subprocess of the MCP client; no hosting required, no auth complexity.
 - **SQLite cache** — zero-ops, single file, with per-resource TTLs (immutable APOD entries cached forever, NEO feeds cached 24h).
 - **Pydantic-typed tools** — every tool input is a validated schema, surfaced to the LLM for accurate tool selection.
@@ -152,6 +153,17 @@ uv sync
 uv run pytest
 ```
 
+### Tests
+
+Running a single feature's colocated tests:
+```bash
+uv run pytest nasa_mcp/features/apod/__tests__
+```
+
+Running a specific test file:
+```bash
+uv run pytest nasa_mcp/features/apod/__tests__/test_inputs.py
+```
 ### Running the server locally
 
 The server speaks stdio JSON-RPC — running it bare in a terminal just blocks waiting for a client. To smoke-test that it boots:
