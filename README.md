@@ -75,20 +75,20 @@ Ask Claude:
 
 ## Available tools (examples)
 
-|Complete | Tool | Description |
-|---------|------|-------------|
-|[x]| `get_apod` | Astronomy Picture of the Day for a given date (or today). |
-|[]| `search_apod` | Full-text search across the APOD archive (1995–today). |
-|[x]| `get_rover_photos` | Photos from a Mars rover by sol or Earth date, optionally filtered by camera. |
-|[x]| `get_rover_manifest` | Mission overview for a rover: total photos, sol range, cameras. |
-|[]| `get_neo_feed` | Near-Earth asteroids approaching in a date range. |
-|[]| `get_neo_lookup` | Detailed orbital data for a specific asteroid. |
-|[]| `search_image_library` | Search NASA's full image and video library. |
-|[]| `get_image_metadata` | Detailed metadata for a specific image asset. |
-|[]| `search_exoplanets` | Query the Exoplanet Archive with structured filters. |
-|[]| `compare_to_earth` | Compare an exoplanet's parameters to Earth's. |
-|[]| `get_earth_imagery` | Landsat imagery for any lat/lon and date. |
-|[]| `get_cache_stats` | Inspect the local cache (hit rate, size, entries). |
+| Tool | Description |
+|------|-------------|
+| `get_apod` | Astronomy Picture of the Day for a given date (or today). |
+| `search_apod` | Full-text search across the APOD archive (1995–today). |
+| `get_rover_photos` | Photos from a Mars rover by sol or Earth date, optionally filtered by camera. |
+| `get_rover_manifest` | Mission overview for a rover: total photos, sol range, cameras. |
+| `get_neo_feed` | Near-Earth asteroids approaching in a date range. |
+| `get_neo_lookup` | Detailed orbital data for a specific asteroid. |
+| `search_image_library` | Search NASA's full image and video library. |
+| `get_image_metadata` | Detailed metadata for a specific image asset. |
+| `search_exoplanets` | Query the Exoplanet Archive with structured filters. |
+| `compare_to_earth` | Compare an exoplanet's parameters to Earth's. |
+| `get_earth_imagery` | Landsat imagery for any lat/lon and date. |
+| `get_cache_stats` | Inspect the local cache (hit rate, size, entries). |
 
 Full tool schemas: see [`docs/tools.md`](docs/tools.md).
 
