@@ -19,3 +19,4 @@ class NotFoundError(NasaApiError):
 
 class CacheError(NasaMcpError):
     """The cache failed to read or write."""
+    
