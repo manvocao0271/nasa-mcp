@@ -11,6 +11,15 @@ from nasa_mcp.config import Config
 from nasa_mcp.errors import NasaApiError, NotFoundError, RateLimitError
 
 
+def _check_availability(response: httpx.Response) -> None:
+    """Raise NasaApiError if the response is HTML - NASA's Mars Photos backend is archived."""
+
+    if response.headers.get("content-type", "").startswith("text/html"):
+        raise NasaApiError(
+            "NASA's Mars Photos API is currently unavailable. The upstream backend (corincerami/mars-photo-api on Heroku) has been archived. Track status at https://github.com/corincerami/mars-photo-api."
+        )
+
+
 async def get_rover_photos(
     config: Config,
     rover_name: str,
@@ -33,6 +42,8 @@ async def get_rover_photos(
             f"https://api.nasa.gov/mars-photos/api/v1/rovers/{rover_name}/photos",
             params=params,
         )
+    
+    _check_availability(response)
 
     match response.status_code:
         case status if 200 <= status < 300:
@@ -57,6 +68,8 @@ async def get_rover_manifest(config: Config, rover_name: str) -> dict:
             f"https://api.nasa.gov/mars-photos/api/v1/manifests/{rover_name}",
             params=params,
         )
+
+    _check_availability(response)
 
     match response.status_code:
         case status if 200 <= status < 300:
