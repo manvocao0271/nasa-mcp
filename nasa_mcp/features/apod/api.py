@@ -49,12 +49,17 @@ async def search_apod(config: Config, query: str, start_date: date, end_date: da
         "end_date": end_date.isoformat(),
         }
 
-    async with httpx.AsyncClient(timeout=config.request_timeout) as client:
-        response = await client.get(
-            "https://api.nasa.gov/planetary/apod",
-            params=params
-        )
-    
+    for attempt in range(3):
+        async with httpx.AsyncClient(timeout=config.request_timeout) as client:
+            response = await client.get(
+                "https://api.nasa.gov/planetary/apod",
+                params=params,
+            )
+        if response.status_code < 500:
+            break
+        if attempt < 2:
+            await asyncio.sleep(2 ** attempt)
+
     match response.status_code:
         case status if 200 <= status < 300:
             q = query.lower()

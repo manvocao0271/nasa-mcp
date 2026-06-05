@@ -157,15 +157,39 @@ uv run pytest
 
 ### Tests
 
-Running a single feature's colocated tests:
+The suite is split into three tiers, each with a defined scope:
+
+| Tier | Location | Scope |
+|------|----------|-------|
+| **Unit** | `nasa_mcp/features/<feature>/__tests__/` | One feature's internals — Pydantic validation, helpers. No network. |
+| **Integration** | `tests/` | Cross-cutting concerns — tool registration, cache behavior, LLM-facing description quality. No network. |
+| **Live** | `tests/test_live.py` (marked `@pytest.mark.live`) | Real round-trips against NASA's APIs. Skipped by default. |
+
+Default `pytest` runs the unit + integration tiers (everything except `live`):
+
 ```bash
-uv run pytest nasa_mcp/features/apod/__tests__
+uv run pytest                                            # ~21 tests, no network
 ```
 
-Running a specific test file:
+Other useful invocations:
+
 ```bash
-uv run pytest nasa_mcp/features/apod/__tests__/test_inputs.py
+uv run pytest tests                                      # only root-level integration tests
+uv run pytest nasa_mcp/features                          # only per-feature unit tests
+uv run pytest nasa_mcp/features/apod/__tests__           # one feature's unit tests
+uv run pytest -m live                                    # live-network tests only (needs NASA_API_KEY)
+uv run pytest -m "live or not live"                      # everything including live
+uv run pytest -k get_apod                                # any test matching the keyword
 ```
+
+The integration suite includes a description-length check that fails if any registered tool's docstring drops below a sensible threshold — a safety net against accidental docstring regressions during refactors, since terse descriptions silently degrade LLM tool selection.
+
+When adding a new test:
+
+- Tests for one feature's pure logic → `nasa_mcp/features/<feature>/__tests__/`
+- Tests that touch multiple features, the cache layer, or the MCP server → `tests/`
+- Tests that require real NASA responses → `tests/test_live.py`, marked `@pytest.mark.live`
+
 ### Running the server locally
 
 The server speaks stdio JSON-RPC — running it bare in a terminal just blocks waiting for a client. To smoke-test that it boots:
