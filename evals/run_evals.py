@@ -10,7 +10,7 @@ import random
 from datetime import date, timedelta
 from pathlib import Path
 
-from nasa_mcp.apis.apod import get_apod
+from nasa_mcp.features.apod.api import get_apod
 from nasa_mcp.cache import Cache
 from nasa_mcp.config import Config
 

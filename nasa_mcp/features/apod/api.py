@@ -3,7 +3,9 @@
 Endpoints: https://api.nasa.gov/planetary/apod
 """
 
+import asyncio
 import httpx
+
 from datetime import date
 from nasa_mcp.config import Config
 from nasa_mcp.errors import NasaApiError, NotFoundError, RateLimitError
@@ -16,11 +18,16 @@ async def get_apod(config: Config, target_date: date | None = None) -> dict:
     if target_date is not None:
         params["date"] = target_date.isoformat()
 
-    async with httpx.AsyncClient(timeout=config.request_timeout) as client:
-        response = await client.get(
-            "https://api.nasa.gov/planetary/apod",
-            params=params,
-        )
+    for attempt in range(3):
+        async with httpx.AsyncClient(timeout=config.request_timeout) as client:
+            response = await client.get(
+                "https://api.nasa.gov/planetary/apod",
+                params=params,
+            )
+        if response.status_code < 500:
+            break
+        if attempt < 2:
+            await asyncio.sleep(2 ** attempt)  # 1s, 2s, 4s
 
     match response.status_code:
         case status if 200 <= status < 300:
