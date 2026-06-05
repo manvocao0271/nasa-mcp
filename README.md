@@ -234,12 +234,13 @@ Then `/mcp` inside Claude Code will list it as connected.
 
 ## Roadmap
 
-- [x] APOD, Mars rovers, NEOs, Exoplanets, Image Library
+- [ ] APOD, Mars rovers, NEOs, Exoplanets, Image Library
 - [ ] DONKI space weather events
 - [ ] EPIC Earth imagery
 - [ ] TechTransfer / patents
 - [ ] Streaming tool responses for large queries
 - [ ] Optional `sky-and-orbits` companion server (ISS passes, planet positions)
+- [ ] **AI image upscaling tool** — take any image URL returned by another tool (APOD `hdurl`, Mars rover `img_src`, Image Library asset) and return a Real-ESRGAN-upscaled version. Mars rover photos in particular benefit since raw sensor frames are ~1024×1024. Likely a separate `features/upscale/` module; two viable backends — local Real-ESRGAN (free, ~10–30s per image, ships a model file) or hosted via Replicate (faster, free tier covers light use). Out of scope for v1 because the dependency footprint and runtime cost are non-trivial.
 
 ## License
 

@@ -14,6 +14,7 @@ cache = Cache(config.cache_path)
 
 def register_tools() -> None:
     """Register all MCP feature modules."""
+    
     register_apod_tools(mcp, config, cache)
     register_mars_rover_tools(mcp, config, cache)
 
