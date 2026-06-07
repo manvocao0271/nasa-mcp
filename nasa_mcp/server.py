@@ -5,6 +5,7 @@ from mcp.server.fastmcp import FastMCP
 from nasa_mcp.cache import Cache
 from nasa_mcp.config import load
 from nasa_mcp.features.apod.tools import register_apod_tools
+from nasa_mcp.features.earth.tools import register_earth_tools
 from nasa_mcp.features.mars_rovers.tools import register_mars_rover_tools
 from nasa_mcp.features.neo.tools import register_neo_tools
 
@@ -17,6 +18,7 @@ def register_tools() -> None:
     """Register all MCP feature modules."""
     
     register_apod_tools(mcp, config, cache)
+    register_earth_tools(mcp, config, cache)
     register_mars_rover_tools(mcp, config, cache)
     register_neo_tools(mcp, config, cache)
 

@@ -87,7 +87,8 @@ Ask Claude:
 | `get_image_metadata` | Detailed metadata for a specific image asset. |
 | `search_exoplanets` | Query the Exoplanet Archive with structured filters. |
 | `compare_to_earth` | Compare an exoplanet's parameters to Earth's. |
-| `get_earth_imagery` | Landsat imagery for any lat/lon and date. |
+| `get_epic_images` | Full-disc Earth images from DSCOVR's EPIC camera for a given date (or the latest available). |
+| `get_epic_available_dates` | List all dates with EPIC Earth imagery available. |
 | `get_cache_stats` | Inspect the local cache (hit rate, size, entries). |
 
 > ⚠️ **Mars rover tools — upstream issue:** NASA's `mars-photos` endpoint proxies to a community backend ([corincerami/mars-photo-api](https://github.com/corincerami/mars-photo-api)) which has been archived. Calls to `get_rover_photos` and `get_rover_manifest` currently raise a clear "service unavailable" error. The client code is correct and will work again automatically if NASA restores or migrates the endpoint.
@@ -145,6 +146,10 @@ Measured on a 30-date APOD benchmark (cold pass + warm pass, real `NASA_API_KEY`
 | Answer correctness (Claude Sonnet judge) | _pending_ |
 
 Run the benchmark yourself: `uv run python evals/run_evals.py`.
+
+## Planned features
+
+- **GIBS (NASA Global Imagery Browse Services)** — WMTS tile service delivering global, full-resolution satellite imagery (MODIS, VIIRS, Landsat, etc.). Unlike EPIC, GIBS provides regional/local views at zoom levels suitable for inspecting specific areas of Earth. Implementation requires computing tile coordinates from lat/lon/zoom and is tracked as a future `features/gibs/` module.
 
 ## Development
 
