@@ -3,6 +3,8 @@
 import pytest
 from mcp.server.fastmcp import FastMCP
 
+pytestmark = pytest.mark.asyncio
+
 EXPECTED_TOOLS = {
     "get_apod_tool",
     "search_apod_tool",

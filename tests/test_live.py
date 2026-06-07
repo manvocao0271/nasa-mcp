@@ -17,6 +17,8 @@ from nasa_mcp.config import Config
 from nasa_mcp.features.apod.api import get_apod, search_apod
 from nasa_mcp.errors import NasaApiError
 
+pytestmark = pytest.mark.asyncio
+
 
 def _live_config() -> Config:
     """Build a Config with the developer's real NASA_API_KEY for live tests."""
