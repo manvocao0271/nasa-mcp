@@ -14,8 +14,9 @@ import pytest
 from dotenv import load_dotenv
 
 from nasa_mcp.config import Config
-from nasa_mcp.features.apod.api import get_apod, search_apod
 from nasa_mcp.errors import NasaApiError
+from nasa_mcp.features.apod.api import get_apod, search_apod
+from nasa_mcp.features.earth.api import get_epic_available_dates, get_epic_images
 
 pytestmark = pytest.mark.asyncio
 
@@ -58,3 +59,37 @@ async def test_search_apod_filters_by_keyword() -> None:
     for entry in results:
         body = (entry.get("title", "") + entry.get("explanation", "")).lower()
         assert "galaxy" in body
+
+
+@pytest.mark.live
+async def test_get_epic_images_returns_expected_fields() -> None:
+    try:
+        records = await get_epic_images(_live_config(), "natural")
+    except NasaApiError as e:
+        pytest.skip(f"EPIC API unavailable upstream: {e}")
+
+    assert isinstance(records, list)
+    assert len(records) > 0
+    first = records[0]
+    assert "identifier" in first
+    assert "caption" in first
+    assert "date" in first
+    assert "centroid_coordinates" in first
+    assert "jpg_url" in first
+    assert first["jpg_url"].startswith("https://epic.gsfc.nasa.gov/archive/natural/")
+    assert first["jpg_url"].endswith(".jpg")
+
+
+@pytest.mark.live
+async def test_get_epic_available_dates_returns_sorted_list() -> None:
+    try:
+        dates = await get_epic_available_dates(_live_config(), "natural")
+    except NasaApiError as e:
+        pytest.skip(f"EPIC API unavailable upstream: {e}")
+
+    assert isinstance(dates, list)
+    assert len(dates) > 0
+    # Archive starts 2015-06-13
+    assert dates[0] >= "2015-06-13"
+    # List should be in ascending order
+    assert dates == sorted(dates)

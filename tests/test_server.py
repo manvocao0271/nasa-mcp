@@ -8,8 +8,12 @@ pytestmark = pytest.mark.asyncio
 EXPECTED_TOOLS = {
     "get_apod_tool",
     "search_apod_tool",
+    "get_epic_images_tool",
+    "get_epic_available_dates_tool",
     "get_rover_photos_tool",
     "get_rover_manifest_tool",
+    "get_neo_feed_tool",
+    "get_neo_lookup_tool",
 }
 
 MIN_DESCRIPTION_LENGTH = 150
@@ -55,8 +59,12 @@ async def test_every_tool_has_an_input_schema(mcp_with_tools: FastMCP) -> None:
     [
         ("get_apod_tool", "title"),
         ("search_apod_tool", "explanation"),
+        ("get_epic_images_tool", "jpg_url"),
+        ("get_epic_available_dates_tool", "YYYY-MM-DD"),
         ("get_rover_photos_tool", "img_src"),
         ("get_rover_manifest_tool", "photo_manifest"),
+        ("get_neo_feed_tool", "close_approach_data"),
+        ("get_neo_lookup_tool", "orbital_data"),
     ],
 )
 async def test_tool_description_mentions_response_field(
