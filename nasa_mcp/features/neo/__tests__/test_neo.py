@@ -12,7 +12,7 @@ def test_get_neo_feed_input_accepts_optional_date() -> None:
 def test_get_neo_feed_input_allows_ommitted_date() -> None:
     args = GetNeoFeedInput(start_date=date(2026, 5, 31))
 
-    assert args.end_date == None
+    assert args.end_date is None
 
 
 def test_get_neo_lookup_input_accepts_asteroid_id() -> None:

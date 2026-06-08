@@ -30,7 +30,7 @@ MODEL = "llama-3.3-70b-versatile"
 
 QUESTIONS = [
     "What was the Astronomy Picture of the Day on July 20, 1969 (Apollo 11 moon landing)?",
-    "What was the Astronomy Picture of the Day on Barack Obama's inauguration?"
+    "What was the Astronomy Picture of the Day on Barack Obama's inauguration?",
     "Show me the most recent full-disc Earth image taken from space by DSCOVR's EPIC camera.",
     "Are there any potentially hazardous asteroids approaching Earth in the next 7 days starting from 2026-06-07?",
 ]
@@ -113,6 +113,7 @@ async def run_agentic_loop(
             messages=messages,
             tools=openai_tools,  # type: ignore[arg-type]
             tool_choice="auto",
+            parallel_tool_calls=False,
         )
         msg = response.choices[0].message
 
@@ -202,7 +203,7 @@ async def main() -> None:
 
             openai_tools, wrap_map = mcp_tools_to_openai(mcp_tools)
 
-            for question in QUESTIONS:
+            for question in QUESTIONS[1:2]:
                 try:
                     await run_agentic_loop(openai, session, openai_tools, wrap_map, question)
                 except Exception as exc:
